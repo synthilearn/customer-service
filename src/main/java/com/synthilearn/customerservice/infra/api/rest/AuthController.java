@@ -5,6 +5,7 @@ import com.synthilearn.customerservice.app.services.AuthService;
 import com.synthilearn.customerservice.domain.Customer;
 import com.synthilearn.customerservice.infra.api.rest.dto.DataSaveRequest;
 import com.synthilearn.customerservice.infra.api.rest.dto.EmailRequest;
+import com.synthilearn.customerservice.infra.api.rest.dto.ExternalRegisterRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,12 @@ public class AuthController {
     @PostMapping("/activate")
     public Mono<GenericResponse<Customer>> customerActivate(@RequestBody @Valid EmailRequest request) {
         return authService.activate(request)
+                .map(GenericResponse::ok);
+    }
+
+    @PostMapping("/external-register")
+    public Mono<GenericResponse<Customer>> externalRegister(@RequestBody @Valid ExternalRegisterRequest request) {
+        return authService.externalRegister(request)
                 .map(GenericResponse::ok);
     }
 }

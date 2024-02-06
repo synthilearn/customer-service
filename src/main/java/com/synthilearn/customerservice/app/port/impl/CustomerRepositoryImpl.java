@@ -6,6 +6,7 @@ import com.synthilearn.customerservice.domain.RegisterStatus;
 import com.synthilearn.customerservice.domain.RegistrationType;
 import com.synthilearn.customerservice.domain.Role;
 import com.synthilearn.customerservice.infra.api.rest.dto.DataSaveRequest;
+import com.synthilearn.customerservice.infra.api.rest.dto.ExternalRegisterRequest;
 import com.synthilearn.customerservice.infra.persistence.jpa.entity.CustomerEntity;
 import com.synthilearn.customerservice.infra.persistence.jpa.mapper.CustomerEntityMapper;
 import com.synthilearn.customerservice.infra.persistence.jpa.repository.CustomerJpaRepository;
@@ -57,6 +58,17 @@ public class CustomerRepositoryImpl implements CustomerRepository {
         return customerJpaRepository.save(customer.toBuilder()
                         .status(RegisterStatus.ACTIVE)
                         .updatedDate(ZonedDateTime.now())
+                        .build())
+                .map(customerEntityMapper::map);
+    }
+
+    @Override
+    @Transactional
+    public Mono<Customer> externalRegister(ExternalRegisterRequest request) {
+        return customerJpaRepository.save(emailSetupEnrichCustomer(request.getEmail()).toBuilder()
+                        .status(RegisterStatus.ACTIVE)
+                        .registrationType(RegistrationType.EXTERNAL)
+                        .name(request.getName())
                         .build())
                 .map(customerEntityMapper::map);
     }

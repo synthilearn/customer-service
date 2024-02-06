@@ -5,6 +5,7 @@ import com.synthilearn.customerservice.app.services.AuthService;
 import com.synthilearn.customerservice.domain.Customer;
 import com.synthilearn.customerservice.domain.RegisterStatus;
 import com.synthilearn.customerservice.infra.api.rest.dto.DataSaveRequest;
+import com.synthilearn.customerservice.infra.api.rest.dto.ExternalRegisterRequest;
 import com.synthilearn.customerservice.infra.api.rest.exception.CustomerException;
 import com.synthilearn.customerservice.infra.api.rest.dto.EmailRequest;
 import com.synthilearn.customerservice.infra.persistence.jpa.entity.CustomerEntity;
@@ -27,10 +28,7 @@ public class AuthServiceImpl implements AuthService {
         return customerRepository.findByEmail(request.email())
                 .singleOptional()
                 .flatMap(customerOpt -> {
-                    if (customerOpt.isPresent()) {
-                        log.error("Customer with email: {} already exists", request.email());
-                        return Mono.error(CustomerException.alreadyExistsByEmail(request.email()));
-                    }
+                    checkCustomerNotExists(customerOpt, request.email());
                     return customerRepository.emailSetup(request.email());
                 });
     }
@@ -55,6 +53,23 @@ public class AuthServiceImpl implements AuthService {
                     checkStatus(customer.getStatus(), RegisterStatus.DATA_SAVED, request.email());
                     return customerRepository.activate(customer);
                 });
+    }
+
+    @Override
+    public Mono<Customer> externalRegister(ExternalRegisterRequest request) {
+        return customerRepository.findByEmail(request.getEmail())
+                .singleOptional()
+                .flatMap(customerOpt -> {
+                    checkCustomerNotExists(customerOpt, request.getEmail());
+                    return customerRepository.externalRegister(request);
+                });
+    }
+
+    private void checkCustomerNotExists(Optional<CustomerEntity> customerOpt, String email) {
+        if (customerOpt.isPresent()) {
+            log.error("Customer with email: {} already exists", email);
+            throw CustomerException.alreadyExistsByEmail(email);
+        }
     }
 
     private void checkStatus(RegisterStatus actual, RegisterStatus expected, String email) {
