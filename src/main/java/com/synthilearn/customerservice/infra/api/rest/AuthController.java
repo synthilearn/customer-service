@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin
 @RequestMapping("/customer-service/v1/auth")
 public class AuthController {
 
