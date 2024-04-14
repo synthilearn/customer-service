@@ -2,6 +2,7 @@ package com.synthilearn.customerservice.app.services.impl;
 
 import com.synthilearn.customerservice.app.port.CustomerRepository;
 import com.synthilearn.customerservice.app.services.CustomerService;
+import com.synthilearn.customerservice.infra.api.rest.dto.EditUserRequest;
 import com.synthilearn.customerservice.infra.api.rest.exception.CustomerException;
 import com.synthilearn.customerservice.infra.api.rest.dto.CustomerDto;
 import com.synthilearn.customerservice.infra.api.rest.mapper.CustomerDtoMapper;
@@ -34,6 +35,12 @@ public class CustomerServiceImpl implements CustomerService {
                 .map(customerDtoMapper::map)
                 .switchIfEmpty(Mono.error(CustomerException.notFoundById(id)))
                 .doOnError(error -> log.error("Customer not found by id: {}", id));
+    }
+
+    @Override
+    public Mono<CustomerDto> editCustomer(UUID id, EditUserRequest request) {
+        return customerRepository.editCustomer(request, id)
+                .map(customerDtoMapper::map);
     }
 
 }

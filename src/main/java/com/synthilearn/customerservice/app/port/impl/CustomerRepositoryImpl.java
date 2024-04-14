@@ -6,7 +6,9 @@ import com.synthilearn.customerservice.domain.RegisterStatus;
 import com.synthilearn.customerservice.domain.RegistrationType;
 import com.synthilearn.customerservice.domain.Role;
 import com.synthilearn.customerservice.infra.api.rest.dto.DataSaveRequest;
+import com.synthilearn.customerservice.infra.api.rest.dto.EditUserRequest;
 import com.synthilearn.customerservice.infra.api.rest.dto.ExternalRegisterRequest;
+import com.synthilearn.customerservice.infra.api.rest.exception.CustomerException;
 import com.synthilearn.customerservice.infra.persistence.jpa.entity.CustomerEntity;
 import com.synthilearn.customerservice.infra.persistence.jpa.mapper.CustomerEntityMapper;
 import com.synthilearn.customerservice.infra.persistence.jpa.repository.CustomerJpaRepository;
@@ -70,6 +72,20 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                         .registrationType(RegistrationType.EXTERNAL)
                         .name(request.getName())
                         .build())
+                .map(customerEntityMapper::map);
+    }
+
+    @Override
+    @Transactional
+    public Mono<Customer> editCustomer(EditUserRequest request, UUID id) {
+        return customerJpaRepository.findById(id)
+                .switchIfEmpty(Mono.error(CustomerException.notFoundById(id)))
+                .map(customer -> customer.toBuilder()
+                        .name(request.name())
+                        .surname(request.surname())
+                        .updatedDate(ZonedDateTime.now())
+                        .build())
+                .doOnNext(customerJpaRepository::save)
                 .map(customerEntityMapper::map);
     }
 
