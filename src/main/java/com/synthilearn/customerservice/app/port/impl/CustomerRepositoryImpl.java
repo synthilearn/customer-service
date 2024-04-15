@@ -85,8 +85,8 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                         .surname(request.surname())
                         .updatedDate(ZonedDateTime.now())
                         .build())
-                .doOnNext(customerJpaRepository::save)
-                .map(customerEntityMapper::map);
+                .flatMap(customer -> customerJpaRepository.save(customer)
+                        .map(customerEntityMapper::map));
     }
 
     private CustomerEntity emailSetupEnrichCustomer(String email) {

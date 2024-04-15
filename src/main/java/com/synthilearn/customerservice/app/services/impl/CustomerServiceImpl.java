@@ -6,6 +6,8 @@ import com.synthilearn.customerservice.infra.api.rest.dto.EditUserRequest;
 import com.synthilearn.customerservice.infra.api.rest.exception.CustomerException;
 import com.synthilearn.customerservice.infra.api.rest.dto.CustomerDto;
 import com.synthilearn.customerservice.infra.api.rest.mapper.CustomerDtoMapper;
+import com.synthilearn.securestarter.AccessToken;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,8 +40,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Mono<CustomerDto> editCustomer(UUID id, EditUserRequest request) {
-        return customerRepository.editCustomer(request, id)
+    public Mono<CustomerDto> editCustomer(AccessToken accessToken, EditUserRequest request) {
+        return customerRepository.editCustomer(request, accessToken.getId())
                 .map(customerDtoMapper::map);
     }
 

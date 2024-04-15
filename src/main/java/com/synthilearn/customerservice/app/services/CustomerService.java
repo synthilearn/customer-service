@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.synthilearn.customerservice.infra.api.rest.dto.CustomerDto;
 import com.synthilearn.customerservice.infra.api.rest.dto.EditUserRequest;
+import com.synthilearn.securestarter.AccessToken;
 
 import reactor.core.publisher.Mono;
 
@@ -13,5 +14,5 @@ public interface CustomerService {
 
     Mono<CustomerDto> getCustomerById(UUID id);
 
-    Mono<CustomerDto> editCustomer(UUID id, EditUserRequest request);
+    Mono<CustomerDto> editCustomer(AccessToken accessToken, EditUserRequest request);
 }

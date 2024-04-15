@@ -1,16 +1,6 @@
 package com.synthilearn.customerservice.infra.api.rest;
 
-import java.util.UUID;
-
 import jakarta.validation.Valid;
-
-import com.synthilearn.commonstarter.GenericResponse;
-import com.synthilearn.customerservice.app.services.CustomerService;
-import com.synthilearn.customerservice.infra.api.rest.dto.CustomerDto;
-import com.synthilearn.customerservice.infra.api.rest.dto.EditUserRequest;
-import com.synthilearn.securestarter.AccessToken;
-
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,6 +9,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synthilearn.commonstarter.GenericResponse;
+import com.synthilearn.customerservice.app.services.CustomerService;
+import com.synthilearn.customerservice.infra.api.rest.dto.CustomerDto;
+import com.synthilearn.customerservice.infra.api.rest.dto.EditUserRequest;
+import com.synthilearn.securestarter.AccessToken;
+
+import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -40,10 +37,10 @@ public class CustomerController {
                 .map(GenericResponse::ok);
     }
 
-    @PatchMapping("/{id}")
-    public Mono<GenericResponse<CustomerDto>> editCustomer(@PathVariable UUID id,
+    @PatchMapping
+    public Mono<GenericResponse<CustomerDto>> editCustomer(AccessToken accessToken,
                                                            @RequestBody @Valid EditUserRequest request) {
-        return customerService.editCustomer(id, request)
+        return customerService.editCustomer(accessToken, request)
                 .map(GenericResponse::ok);
     }
 
